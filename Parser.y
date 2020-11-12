@@ -43,8 +43,13 @@ string      { ID $$ }
 %left '*' '/'
 %left '%'
 
-
 %%
+
+Atr : string '=' Exp ';' { Atr_string $1 $3 }
+	| int string '=' Exp ';' { Atr_int_value $2 $4 }
+	| int string ';' { Atr_int $2 }
+	| bool string '=' Exp ';' { Atr_boolean_value $2 $4 }
+	| bool string ';' { Atr_boolean $2 } 
 
 Exp : num { Num $1 }  
     | string { Sent $1 }
@@ -64,6 +69,12 @@ Exp : num { Num $1 }
     | Exp '<=' Exp { Less_Or_Equal $1 $3 }
 
 {
+data Atr = Atr_string String Exp
+         | Atr_int_value String Exp
+         | Atr_int String
+         | Atr_boolean_value String Exp
+         | Atr_boolean String
+         deriving Show
 
 data Exp = Num Int 
          | Sent String
