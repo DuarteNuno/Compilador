@@ -43,13 +43,16 @@ string      { ID $$ }
 %left '*' '/'
 %left '%'
 
-%%
+%% 
+
+Atrs : Atr { [$1] }
+     | Atrs Atr { $1 ++ [$2] } 
 
 Atr : string '=' Exp ';' { Atr_string $1 $3 }
 	| int string '=' Exp ';' { Atr_int_value $2 $4 }
 	| int string ';' { Atr_int $2 }
 	| bool string '=' Exp ';' { Atr_boolean_value $2 $4 }
-	| bool string ';' { Atr_boolean $2 } 
+	| bool string ';' { Atr_boolean $2 }  
 
 Exp : num { Num $1 }  
     | string { Sent $1 }
@@ -59,7 +62,7 @@ Exp : num { Num $1 }
     | Exp '+' Exp { Add $1 $3 }
     | Exp '-' Exp { Minus $1 $3 }
     | Exp '*' Exp { Times $1 $3 }
-    | Exp '/' Exp { Div $1 $3 }
+    | Exp '/' Exp { Div $1 $3 }$1 $1 
     | Exp '%' Exp { Mod $1 $3 }
     | Exp '>' Exp { Greater $1 $3 }
     | Exp '<' Exp { Less $1 $3 }
@@ -69,6 +72,9 @@ Exp : num { Num $1 }
     | Exp '<=' Exp { Less_Or_Equal $1 $3 }
 
 {
+data Atrs = Atr
+          deriving Show
+
 data Atr = Atr_string String Exp
          | Atr_int_value String Exp
          | Atr_int String
