@@ -6,7 +6,6 @@ import Lexer
 %name parser
 %tokentype { Token }
 %error { parseError }
-
 %token	
 
 if			{ TOK_IF }
@@ -17,7 +16,7 @@ false		{ TOK_FALSE }
 return		{ TOK_RETURN }
 print_int	{ TOK_PRINT_INT}
 while 		{ TOK_WHILE }
-num 		{ TOK_NUM $$ }
+num      	{ TOK_NUM $$ }
 string      { ID $$ }
 '+' 		{ TOK_PLUS }
 '*'			{ TOK_TIMES }
@@ -37,13 +36,17 @@ string      { ID $$ }
 '<'			{ TOK_LESS } 
 '>' 		{ TOK_GREATER }
 
-
 %nonassoc '==' '!=' '<=' '>=' '=' '<' '>'
 %left '+' '-'
 %left '*' '/'
 %left '%'
 
-%% 
+%%
+
+Cmd : Atrs { $1 }
+    | Cnd  { $1 }
+
+Cnd : if '(' Exp_Bool ')' Atr { Cond $3 $5 }
 
 Atrs : Atr { [$1] }
      | Atrs Atr { $1 ++ [$2] } 
@@ -62,16 +65,25 @@ Exp : num { Num $1 }
     | Exp '+' Exp { Add $1 $3 }
     | Exp '-' Exp { Minus $1 $3 }
     | Exp '*' Exp { Times $1 $3 }
-    | Exp '/' Exp { Div $1 $3 }$1 $1 
+    | Exp '/' Exp { Div $1 $3 } 
     | Exp '%' Exp { Mod $1 $3 }
-    | Exp '>' Exp { Greater $1 $3 }
-    | Exp '<' Exp { Less $1 $3 }
-    | Exp '==' Exp { Equals_to $1 $3 }
-    | Exp '!=' Exp { Different $1 $3 }
-    | Exp '>=' Exp { Greater_Or_Equal $1 $3 }
-    | Exp '<=' Exp { Less_Or_Equal $1 $3 }
+
+Exp_Bool : Exp '>' Exp { Greater $1 $3 }
+         | Exp '<' Exp { Less $1 $3 }
+         | Exp '==' Exp { Equals_to $1 $3 }
+         | Exp '!=' Exp { Different $1 $3 }
+         | Exp '>=' Exp { Greater_Or_Equal $1 $3 }
+         | Exp '<=' Exp { Less_Or_Equal $1 $3 }
+
 
 {
+data Cmd = Atrs
+         | Cnd
+         deriving Show
+
+data Cnd = Cond Exp_Bool Atr
+         deriving Show
+
 data Atrs = Atr
           deriving Show
 
@@ -84,19 +96,21 @@ data Atr = Atr_string String Exp
 
 data Exp = Num Int 
          | Sent String
+         | Boolean Bool
          | Add Exp Exp
          | Minus Exp Exp
          | Times Exp Exp
          | Div Exp Exp
          | Mod Exp Exp
-         | Boolean Bool
-         | Greater Exp Exp
-         | Less Exp Exp
-         | Equals_to Exp Exp
-         | Different Exp Exp
-         | Greater_Or_Equal Exp Exp
-         | Less_Or_Equal Exp Exp 
          deriving Show
+
+data Exp_Bool = Greater Exp Exp
+              | Less Exp Exp
+              | Equals_to Exp Exp
+              | Different Exp Exp
+              | Greater_Or_Equal Exp Exp
+              | Less_Or_Equal Exp Exp
+              deriving Show 
 
 parseError :: [Token] -> a
 parseError toks = error "parse error"
