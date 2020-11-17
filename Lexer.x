@@ -12,6 +12,7 @@ tokens:-
 
 $white+;				--ignorar carateres brancos
 int                 { \_ -> TOK_INT }
+main                { \_ -> TOK_MAIN}
 return              { \_ -> TOK_RETURN }
 print_int           { \_ -> TOK_PRINT_INT }
 while 				{ \_ -> TOK_WHILE }
@@ -19,6 +20,7 @@ true 				{ \_ -> TOK_TRUE }
 false				{ \_ -> TOK_FALSE }
 bool                { \_ -> TOK_BOOL }
 if                  { \_ -> TOK_IF }
+else                { \_ -> TOK_ELSE }
 $alpha($alpha|$digit)*  { \s -> ID s}
 $digit+             { \s -> TOK_NUM (read s) }            
 "+"					{ \_ -> TOK_PLUS }
@@ -27,6 +29,7 @@ $digit+             { \s -> TOK_NUM (read s) }
 "/"					{ \_ -> TOK_DIV }
 "%"					{ \_ -> TOK_MOD }
 ";"					{ \_ -> TOK_SEMICOLON }
+","         { \_ -> TOK_COMMA }
 "("					{ \_ -> TOK_LPAREN }
 ")"					{ \_ -> TOK_RPAREN }
 "}"					{ \_ -> TOK_RBRACE }
@@ -41,6 +44,8 @@ $digit+             { \s -> TOK_NUM (read s) }
 
 {
 data Token = TOK_IF
+           | TOK_ELSE
+           | TOK_MAIN
            | ID String
            | TOK_NUM Int
            | TOK_INT
@@ -55,6 +60,7 @@ data Token = TOK_IF
            | TOK_RBRACE 
            | TOK_LBRACE 
            | TOK_SEMICOLON 
+           | TOK_COMMA
            | TOK_EQUALS_TO 
            | TOK_LESS 
            | TOK_GREATER 
