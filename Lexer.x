@@ -6,7 +6,7 @@
 
 $alpha = [_a-zA-Z]
 $digit = [0-9]
-$white = [\ \ t\n\r]
+$white = [\ \t\n\r]
 
 tokens:-
 
@@ -15,14 +15,17 @@ int                 { \_ -> TOK_INT }
 main                { \_ -> TOK_MAIN}
 return              { \_ -> TOK_RETURN }
 print_int           { \_ -> TOK_PRINT_INT }
+scan_int            { \_ -> TOK_SCAN_INT }
 while 				{ \_ -> TOK_WHILE }
 true 				{ \_ -> TOK_TRUE }
 false				{ \_ -> TOK_FALSE }
 bool                { \_ -> TOK_BOOL }
 if                  { \_ -> TOK_IF }
 else                { \_ -> TOK_ELSE }
-$alpha($alpha|$digit)*  { \s -> ID s}
-$digit+             { \s -> TOK_NUM (read s) }            
+$alpha($alpha|$digit)*  { \s -> ID s }
+$digit+             { \s -> TOK_NUM (read s) }   
+"//".*                ;--comentario de linha
+"/*"(\s|.)[^\/]*"*/"  ;--comentario composto       
 "+"					{ \_ -> TOK_PLUS }
 "*"					{ \_ -> TOK_TIMES }
 "-"					{ \_ -> TOK_MINUS }
@@ -33,7 +36,7 @@ $digit+             { \s -> TOK_NUM (read s) }
 "("					{ \_ -> TOK_LPAREN }
 ")"					{ \_ -> TOK_RPAREN }
 "}"					{ \_ -> TOK_RBRACE }
-"{"	                { \_ -> TOK_LBRACE }
+"{"	        { \_ -> TOK_LBRACE }
 "=="				{ \_ -> TOK_EQUAL }
 "!="				{ \_ -> TOK_DIFFERENT }
 ">="				{ \_ -> TOK_LESS_OR_EQUAL }
@@ -41,7 +44,10 @@ $digit+             { \s -> TOK_NUM (read s) }
 "="					{ \_ -> TOK_EQUALS_TO }
 "<"					{ \_ -> TOK_LESS } 
 ">"					{ \_ -> TOK_GREATER }
-
+"!"         { \_ -> TOK_NOT }
+"&&"        { \_ -> TOK_AND }
+"||"        { \_ -> TOK_OR }
+ 
 {
 data Token = TOK_IF
            | TOK_ELSE
@@ -72,6 +78,10 @@ data Token = TOK_IF
            | TOK_FALSE
            | TOK_RETURN
            | TOK_PRINT_INT
+           | TOK_SCAN_INT
            | TOK_WHILE
+           | TOK_NOT
+           | TOK_AND
+           | TOK_OR
            deriving (Eq,Show)
 }
